@@ -1,2 +1,2 @@
 # ip_scan
-Scan ip's to look for open ports.
+Scan a complete network to look for live hosts and their open ports to design you payload accordingly.
