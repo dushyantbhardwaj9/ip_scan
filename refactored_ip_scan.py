@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+import re
+import threading
+import scapy
+
 ##	Check for inputted host weather CIDR or IP
 """ For CIDR
 		Run ping For ALl possible ip address then
@@ -16,6 +21,12 @@ def check_ports(ip):
 
 def check_host(ip):
 	print("Checking Host:",ip)
+
+def parse_input():
+	# take input through parsing
+	# sanitize input and return
+
+
 if "__name__" == "__main__":
 	# take input 
 	# check input with regex
