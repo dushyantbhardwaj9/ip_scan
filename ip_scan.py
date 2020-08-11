@@ -10,8 +10,8 @@ import re
 ipv4_regex = "^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
 cidr_block = "^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$"
 
-if !re.match(ipv4_regex, host):
-	print("Entered Host is not correct")
+# if !re.match(ipv4_regex, host):
+# 	print("Entered Host is not correct")
 
 ip = input('Host Subnet: ')
 file = open("done.txt","w")
