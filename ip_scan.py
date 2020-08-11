@@ -1,13 +1,32 @@
+#!/usr/bin/env python3
+
 import os
-#import ping
+import pyping
 import threading        #from threading import Thread
 import socket
 import resource
-print('Enter your ip address as 192.169.11 if you want to search 192.168.11.2/24')
-ip=input('Host Subnet ')
-F=open("done.txt","w")
-def hosts(host):
-		os.system('ping '+ ipadd+' -c 1 |grep "64 bytes"| cut -d" " -f4 | cut -d ":" -f1 >> done.txt');
+import re
+
+ipv4_regex = "^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
+cidr_block = "^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$"
+
+if !re.match(ipv4_regex, host):
+	print("Entered Host is not correct")
+
+ip = input('Host Subnet: ')
+file = open("done.txt","w")
+
+def ping_host(host):
+	try:
+		response = pyping.ping(host)
+		if response.ret_code:
+			return False
+		return True
+	except Exception as e:
+		print(e)
+
+
+	# os.system('ping '+ ipadd+' -c 1 |grep "64 bytes"| cut -d" " -f4 | cut -d ":" -f1 >> done.txt');
 for i in range(0,256):
 	ipadd=ip + '.' + str(i)
 	t = threading.Thread(target=hosts, args=(ipadd,))
