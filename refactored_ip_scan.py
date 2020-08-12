@@ -46,12 +46,15 @@ import argparse
 
 
 """ Regex to check for IP	
-ipv4_regex = "^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
-cidr_block = "^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$"
-"""
+	ipv4_regex = "^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
+	cidr_block_regex = "^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$"
+	domain_name_regex = "((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}"
+"""	
+
 """ Regex for port number
-	comma_sep_value = "[0-9]+(,[0-9]+)+"
-	range_ports = "(\d+)(?:-(\d+))?$"
+	comma_sep_value_regex = "[0-9]+(,[0-9]+)+$"
+	range_ports_regex = "(\d+)(?:-(\d+))?$"
+	single_port_regex = "^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
 """
 
 def check_ports(ip):
@@ -66,7 +69,7 @@ def parse_input():
 	# sanitize input and return
 	parser = argparse.ArgumentParser(description = "Network Scanner")
 	parser.add_argument("host", help = "Hostname/IP/CIDR to be searched for " )
-	parser.add_argument("-p","--port", required = False, nargs = "*", help = "Specific ports to enumerate for" )
+	parser.add_argument("-p","--port", nargs = "*", help = "Specific ports to enumerate for" )
 
 	inputs = parser.parse_args()
 
