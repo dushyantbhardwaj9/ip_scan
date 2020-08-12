@@ -74,7 +74,6 @@ def parse_input():
 	inputs = parser.parse_args()
 
 
-
 if "__name__" == "__main__":
 	# take input 
 	# check input with regex
