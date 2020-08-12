@@ -3,6 +3,7 @@
 import re
 import threading
 import socket
+import argparse
 
 ##	Check for inputted host weather CIDR or IP
 """ For CIDR
@@ -40,6 +41,19 @@ import socket
 	Try Printing Ouput Along with scanning to see the results live
 """
 
+# Make it all in Socket Programming like for ICMP packets for HOSTS and PORT scanning
+
+
+
+""" Regex to check for IP	
+ipv4_regex = "^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
+cidr_block = "^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$"
+"""
+""" Regex for port number
+	comma_sep_value = "[0-9]+(,[0-9]+)+"
+	range_ports = "(\d+)(?:-(\d+))?$"
+"""
+
 def check_ports(ip):
 	print("Checking ports for IP:",ip)
 	#  Do Something cheesy here
@@ -50,6 +64,12 @@ def check_host(ip):
 def parse_input():
 	# take input through parsing
 	# sanitize input and return
+	parser = argparse.ArgumentParser(description = "Network Scanner")
+	parser.add_argument("host", help = "Hostname/IP/CIDR to be searched for " )
+	parser.add_argument("-p","--port", required = False, nargs = "*", help = "Specific ports to enumerate for" )
+
+	inputs = parser.parse_args()
+
 
 
 if "__name__" == "__main__":
