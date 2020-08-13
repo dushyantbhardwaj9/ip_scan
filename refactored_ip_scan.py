@@ -87,17 +87,21 @@ hosts_input,ports_input = parse_input()
 ports_input = "".join(ports_input)
 # Regex's to validate input
 comma_sep_value_regex = "^[0-9]+(,[0-9]+)+$"
-range_ports_regex = "^(\d+)(?:-)(\d+)+$"
+range_ports_regex = r"^(\d+)(?:-)(\d+)+$"
 individual_port_regex = "^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
+
+
+						## Checking Ports for various types of inputs
 
 if ports_input == None:
 	ports = [x for x in range(1,65536)]
 elif re.fullmatch(pattern = comma_sep_value_regex, string = ports_input):
 	value = re.fullmatch(pattern = comma_sep_value_regex,string = ports_input)
 	ports = value.group().split(',')
-	if max(ports) > 65535 or min(ports):
+	ports = [int(port) for port in ports]
+	if max(ports) > 65535 or min(ports) < 0:
 		# Show Error
-		sys.exit(1)
+		sys.exit(0)
 
 elif re.fullmatch(range_ports_regex, ports_input):
 	value = re.fullmatch(range_ports_regex, ports_input)
@@ -105,15 +109,15 @@ elif re.fullmatch(range_ports_regex, ports_input):
 	start,end = int(start),int(end)
 	if start < 0 or start > 65535 or end < 0 or end > 65535:
 		# Show error
-		sys.exit()
+		sys.exit(0)
 	ports = [port for port in range(start, end+1)]
 
 elif re.fullmatch(individual_port_regex, ports_input):
 	value = re.fullmatch(individual_port_regex, ports_input)
 	ports = [int(value.group())]
-
-if ports == None:
-	ports = [x for x in range(1,65536)]
+	if ports < 0 or ports > 65535:
+		# Show Error if
+		sys.exit(0)
 
 print(hosts_input, ports)
 # check input with regex
