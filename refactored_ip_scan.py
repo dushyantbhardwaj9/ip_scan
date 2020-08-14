@@ -78,7 +78,7 @@ def parse_input():
 	else:
 		return (inputs.host,None)
 
-def validate_input_ports(ports_input):
+def validate_ports(ports_input):
 						## Checking Ports for various types of inputs
 						## If no ports are specified then choose all 0-65535
 
@@ -96,7 +96,8 @@ def validate_input_ports(ports_input):
 		ports = [int(port) for port in ports]
 		if max(ports) > 65535 or min(ports) < 0:
 			# Show Error
-			sys.exit(0)
+			sys.exit(1)
+
 							## Matching ports_input for range seperated value ( 22-55 )
 	elif re.fullmatch(range_ports_regex, ports_input):
 		value = re.fullmatch(range_ports_regex, ports_input)
@@ -104,19 +105,23 @@ def validate_input_ports(ports_input):
 		start,end = int(start),int(end)
 		if start < 0 or start > 65535 or end < 0 or end > 65535:
 			# Show error
-			sys.exit(0)
+			sys.exit(1)
 		ports = [port for port in range(start, end+1)]
+	
 							## Matching ports_input for indvidual value ( 22 )
 	elif re.fullmatch(individual_port_regex, ports_input):
 		value = re.fullmatch(individual_port_regex, ports_input)
 		ports = [int(value.group())]
 		if ports < 0 or ports > 65535:
 			# Show Error if
-			sys.exit(0)
+			sys.exit(1)
+	else:
+		# Display invalid port format
+		print("Invalid Port format")
 	
 	return ports
 
-def validate_input_host(hosts_input):
+def validate_host(hosts_input):
 	ipv4_regex = r"^\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b$"
 	cidr_block_regex = r"^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))+$"
 	domain_name_regex = r"((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}"
@@ -133,6 +138,9 @@ def validate_input_host(hosts_input):
 		value = re.fullmatch(pattern = domain_name_regex, string =hosts_input)
 		host = value.group()
 	
+	else:
+		# Display error saying host format is invalid
+		print("Invalid host format")
 	return host
 
 
@@ -143,8 +151,10 @@ hosts_input,ports_input = parse_input()
 
 ports_input = "".join(ports_input)
 
+host = validate_host(hosts_input)
+ports = validate_ports(ports_input)
 
 
-print(hosts_input, ports)
+print(host, ports)
 # check input with regex
 # accordingly run the program 
