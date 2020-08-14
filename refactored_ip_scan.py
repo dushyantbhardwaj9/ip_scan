@@ -78,6 +78,63 @@ def parse_input():
 	else:
 		return (inputs.host,None)
 
+def validate_input_ports(ports_input):
+						## Checking Ports for various types of inputs
+						## If no ports are specified then choose all 0-65535
+
+	# Regex's to validate input ports
+	comma_sep_value_regex = r"^[0-9]+(,[0-9]+)+$"
+	range_ports_regex = r"^(\d+)(?:-)(\d+)+$"
+	individual_port_regex = r"^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
+
+	if ports_input == None:
+		ports = [x for x in range(1,65536)]
+							## Matching ports_input for comma separated value (22,25,45,98)
+	elif re.fullmatch(pattern = comma_sep_value_regex, string = ports_input):
+		value = re.fullmatch(pattern = comma_sep_value_regex,string = ports_input)
+		ports = value.group().split(',')
+		ports = [int(port) for port in ports]
+		if max(ports) > 65535 or min(ports) < 0:
+			# Show Error
+			sys.exit(0)
+							## Matching ports_input for range seperated value ( 22-55 )
+	elif re.fullmatch(range_ports_regex, ports_input):
+		value = re.fullmatch(range_ports_regex, ports_input)
+		start,end = value.group().split('-')
+		start,end = int(start),int(end)
+		if start < 0 or start > 65535 or end < 0 or end > 65535:
+			# Show error
+			sys.exit(0)
+		ports = [port for port in range(start, end+1)]
+							## Matching ports_input for indvidual value ( 22 )
+	elif re.fullmatch(individual_port_regex, ports_input):
+		value = re.fullmatch(individual_port_regex, ports_input)
+		ports = [int(value.group())]
+		if ports < 0 or ports > 65535:
+			# Show Error if
+			sys.exit(0)
+	
+	return ports
+
+def validate_input_host(hosts_input):
+	ipv4_regex = r"^\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b$"
+	cidr_block_regex = r"^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))+$"
+	domain_name_regex = r"((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}"
+
+	if re.fullmatch(pattern = ipv4_regex, string = hosts_input):
+		value = re.fullmatch(pattern = ipv4_regex, string =hosts_input)
+		host = value.group()
+
+	elif re.fullmatch(pattern = cidr_block_regex, string = hosts_input):
+		value = re.fullmatch(pattern = cidr_block_regex, string =hosts_input)
+		host = value.group()
+	
+	elif re.fullmatch(pattern = domain_name_regex, string = hosts_input):
+		value = re.fullmatch(pattern = domain_name_regex, string =hosts_input)
+		host = value.group()
+	
+	return host
+
 
 print("Program Begin")
 # take input 
@@ -85,40 +142,8 @@ hosts_input,ports_input = parse_input()
 # print(type(hosts_input), type(ports_input))
 
 ports_input = "".join(ports_input)
-# Regex's to validate input
-comma_sep_value_regex = "^[0-9]+(,[0-9]+)+$"
-range_ports_regex = r"^(\d+)(?:-)(\d+)+$"
-individual_port_regex = "^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
 
 
-						## Checking Ports for various types of inputs
-						## If no ports are specified then choose all 0-65535
-if ports_input == None:
-	ports = [x for x in range(1,65536)]
-						## Matching ports_input for comma separated value (22,25,45,98)
-elif re.fullmatch(pattern = comma_sep_value_regex, string = ports_input):
-	value = re.fullmatch(pattern = comma_sep_value_regex,string = ports_input)
-	ports = value.group().split(',')
-	ports = [int(port) for port in ports]
-	if max(ports) > 65535 or min(ports) < 0:
-		# Show Error
-		sys.exit(0)
-						## Matching ports_input for range seperated value ( 22-55 )
-elif re.fullmatch(range_ports_regex, ports_input):
-	value = re.fullmatch(range_ports_regex, ports_input)
-	start,end = value.group().split('-')
-	start,end = int(start),int(end)
-	if start < 0 or start > 65535 or end < 0 or end > 65535:
-		# Show error
-		sys.exit(0)
-	ports = [port for port in range(start, end+1)]
-						## Matching ports_input for indvidual value ( 22 )
-elif re.fullmatch(individual_port_regex, ports_input):
-	value = re.fullmatch(individual_port_regex, ports_input)
-	ports = [int(value.group())]
-	if ports < 0 or ports > 65535:
-		# Show Error if
-		sys.exit(0)
 
 print(hosts_input, ports)
 # check input with regex
