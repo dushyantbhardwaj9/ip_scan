@@ -92,9 +92,10 @@ individual_port_regex = "^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4
 
 
 						## Checking Ports for various types of inputs
-
+						## If no ports are specified then choose all 0-65535
 if ports_input == None:
 	ports = [x for x in range(1,65536)]
+						## Matching ports_input for comma separated value (22,25,45,98)
 elif re.fullmatch(pattern = comma_sep_value_regex, string = ports_input):
 	value = re.fullmatch(pattern = comma_sep_value_regex,string = ports_input)
 	ports = value.group().split(',')
@@ -102,7 +103,7 @@ elif re.fullmatch(pattern = comma_sep_value_regex, string = ports_input):
 	if max(ports) > 65535 or min(ports) < 0:
 		# Show Error
 		sys.exit(0)
-
+						## Matching ports_input for range seperated value ( 22-55 )
 elif re.fullmatch(range_ports_regex, ports_input):
 	value = re.fullmatch(range_ports_regex, ports_input)
 	start,end = value.group().split('-')
@@ -111,7 +112,7 @@ elif re.fullmatch(range_ports_regex, ports_input):
 		# Show error
 		sys.exit(0)
 	ports = [port for port in range(start, end+1)]
-
+						## Matching ports_input for indvidual value ( 22 )
 elif re.fullmatch(individual_port_regex, ports_input):
 	value = re.fullmatch(individual_port_regex, ports_input)
 	ports = [int(value.group())]
