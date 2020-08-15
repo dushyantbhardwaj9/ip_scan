@@ -5,6 +5,8 @@ import sys
 import threading
 import socket
 import argparse
+import ipaddress
+
 
 ##	Check for inputted host weather CIDR or IP
 """ For CIDR
@@ -111,7 +113,7 @@ def validate_ports(ports_input):
 							## Matching ports_input for indvidual value ( 22 )
 	elif re.fullmatch(individual_port_regex, ports_input):
 		value = re.fullmatch(individual_port_regex, ports_input)
-		ports = [int(value.group())]
+		ports = int(value.group())
 		if ports < 0 or ports > 65535:
 			# Show Error if
 			sys.exit(1)
@@ -133,7 +135,13 @@ def validate_host(hosts_input):
 	elif re.fullmatch(pattern = cidr_block_regex, string = hosts_input):
 		value = re.fullmatch(pattern = cidr_block_regex, string =hosts_input)
 		host = value.group()
-	
+
+		net4 = ipaddress.ip_network(host)
+		host = []
+		for x in net4.hosts():
+			host.append(str(x))
+
+
 	elif re.fullmatch(pattern = domain_name_regex, string = hosts_input):
 		value = re.fullmatch(pattern = domain_name_regex, string =hosts_input)
 		host = value.group()
@@ -141,20 +149,22 @@ def validate_host(hosts_input):
 	else:
 		# Display error saying host format is invalid
 		print("Invalid host format")
+		host = None
+	
 	return host
 
 
-print("Program Begin")
 # take input 
 hosts_input,ports_input = parse_input()
-# print(type(hosts_input), type(ports_input))
 
-ports_input = "".join(ports_input)
+
+if ports_input:
+	ports_input = "".join(ports_input)
 
 host = validate_host(hosts_input)
 ports = validate_ports(ports_input)
 
 
-print(host, ports)
+print(len(host), ports)
 # check input with regex
 # accordingly run the program 
