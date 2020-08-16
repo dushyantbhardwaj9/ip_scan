@@ -141,7 +141,6 @@ def validate_host(hosts_input):
 		for x in net4.hosts():
 			host.append(str(x))
 
-
 	elif re.fullmatch(pattern = domain_name_regex, string = hosts_input):
 		value = re.fullmatch(pattern = domain_name_regex, string =hosts_input)
 		host = value.group()
@@ -165,6 +164,6 @@ host = validate_host(hosts_input)
 ports = validate_ports(ports_input)
 
 
-print(len(host), ports)
+print( len(host), ports)
 # check input with regex
 # accordingly run the program 
