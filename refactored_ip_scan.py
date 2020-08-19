@@ -6,8 +6,8 @@ import threading
 import socket
 import argparse
 import ipaddress
-
-from ping3 import ping
+from scapy.all import *
+# from ping3 import ping
 
 ##	Check for inputted host weather CIDR or IP
 """ For CIDR
@@ -67,14 +67,20 @@ def check_ports(ip):
 
 
 
-def active_host(hosts):
+def active_host(hosts ):
 	# print("Checking Host:",ip)
-	active_host = []
+	# active_host = []
 
-	for host in hosts:
-		if ping(host, timeout = 1):
-			active_host.append(host)
-	return active_host
+	# for host in hosts:
+	# 	print(host)
+	ret = ping(host, timeout = 1)
+	if ret != None:
+		# active_hosts.append(host)
+		print(host,"is alive")
+		return 
+	else:
+		return None
+	# return active_host
 
 
 
@@ -160,9 +166,9 @@ def validate_host(hosts_input):
 	else:
 		# Display error saying host format is invalid
 		print("Invalid host format")
-		host = None
+		hosts = None
 	
-	return host
+	return hosts
 
 
 # take input 
@@ -172,10 +178,24 @@ hosts_input,ports_input = parse_input()
 if ports_input:
 	ports_input = "".join(ports_input)
 
-host = validate_host(hosts_input)
+hosts = validate_host(hosts_input)
 ports = validate_ports(ports_input)
 
+active_hosts = []
+# threads = []
+for host in hosts:
+	# threads.append(threading.Thread(target=active_host, args=(host,active_hosts)) )
+	# threads[-1].start()
+	resp = sr1(IP(dst=host)/ICMP()/"Hello World!",timeout=1,verbose=0)
+	print(host)
+	# host = active_host(host) 
+	if resp:
+		active_hosts.append(host)
+	
 
-print( len(host), ports)
+# [x.join() for x in threads]
+print(active_hosts)
+
+# print( len(host), ports)
 # check input with regex
 # accordingly run the program 
