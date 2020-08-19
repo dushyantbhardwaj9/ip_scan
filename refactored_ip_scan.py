@@ -7,6 +7,7 @@ import socket
 import argparse
 import ipaddress
 
+from ping3 import ping
 
 ##	Check for inputted host weather CIDR or IP
 """ For CIDR
@@ -64,8 +65,18 @@ def check_ports(ip):
 	print("Checking ports for IP:",ip)
 	#  Do Something cheesy here
 
-def check_host(ip):
-	print("Checking Host:",ip)
+
+
+def active_host(hosts):
+	# print("Checking Host:",ip)
+	active_host = []
+
+	for host in hosts:
+		if ping(host, timeout = 1):
+			active_host.append(host)
+	return active_host
+
+
 
 def parse_input():
 	# take input through parsing
@@ -127,24 +138,25 @@ def validate_host(hosts_input):
 	ipv4_regex = r"^\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b$"
 	cidr_block_regex = r"^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))+$"
 	domain_name_regex = r"((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}"
+	hosts = []
 
 	if re.fullmatch(pattern = ipv4_regex, string = hosts_input):
 		value = re.fullmatch(pattern = ipv4_regex, string =hosts_input)
 		host = value.group()
+		hosts.append(host)
 
 	elif re.fullmatch(pattern = cidr_block_regex, string = hosts_input):
 		value = re.fullmatch(pattern = cidr_block_regex, string =hosts_input)
 		host = value.group()
 
 		net4 = ipaddress.ip_network(host)
-		host = []
 		for x in net4.hosts():
-			host.append(str(x))
+			hosts.append(str(x))
 
 	elif re.fullmatch(pattern = domain_name_regex, string = hosts_input):
 		value = re.fullmatch(pattern = domain_name_regex, string =hosts_input)
 		host = value.group()
-	
+		hosts.append(host)
 	else:
 		# Display error saying host format is invalid
 		print("Invalid host format")
