@@ -7,6 +7,7 @@ import socket
 import argparse
 import ipaddress
 from scapy.all import *
+
 # from ping3 import ping
 
 ##	Check for inputted host weather CIDR or IP
@@ -182,20 +183,20 @@ hosts = validate_host(hosts_input)
 ports = validate_ports(ports_input)
 
 active_hosts = []
-# threads = []
 for host in hosts:
-	# threads.append(threading.Thread(target=active_host, args=(host,active_hosts)) )
-	# threads[-1].start()
-	resp = sr1(IP(dst=host)/ICMP()/"Hello World!",timeout=1,verbose=0)
-	print(host)
-	# host = active_host(host) 
+	
+	host = socket.gethostbyname(host)
+	conf.L3socket = L3RawSocket
+	
+	resp = sr1(IP(dst=host)/ICMP()/"Hello World!",verbose =0, timeout =1)
 	if resp:
 		active_hosts.append(host)
-	
-
-# [x.join() for x in threads]
+		print(host)
+		
 print(active_hosts)
 
-# print( len(host), ports)
-# check input with regex
-# accordingly run the program 
+
+# threads = []
+	# threads.append(threading.Thread(target=active_host, args=(host,active_hosts)) )
+	# threads[-1].start()
+	# [x.join() for x in threads]
