@@ -10,7 +10,7 @@ from scapy.all import *
 
 # from ping3 import ping
 
-##	Check for inputted host weather CIDR or IP
+# Check for inputted host weather CIDR or IP
 """ For CIDR
 		Run ping For ALl possible ip address then
 		For all Active ip address run for 65535 ports
@@ -49,12 +49,11 @@ from scapy.all import *
 # Make it all in Socket Programming like for ICMP packets for HOSTS and PORT scanning
 
 
-
 """ Regex to check for IP	
 	ipv4_regex = "^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
 	cidr_block_regex = "^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$"
 	domain_name_regex = "((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}"
-"""	
+"""
 
 """ Regex for port number
 	comma_sep_value_regex = "[0-9]+(,[0-9]+)+$"
@@ -62,162 +61,165 @@ from scapy.all import *
 	single_port_regex = "^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
 """
 
+
 def check_ports(ip):
-	print("Checking ports for IP:",ip)
-	#  Do Something cheesy here
+    print("Checking ports for IP:", ip)
+    #  Do Something cheesy here
 
 
+def active_host(hosts):
+    # print("Checking Host:",ip)
+    # active_host = []
 
-def active_host(hosts ):
-	# print("Checking Host:",ip)
-	# active_host = []
-
-	# for host in hosts:
-	# 	print(host)
-	ret = ping(host, timeout = 1)
-	if ret != None:
-		# active_hosts.append(host)
-		print(host,"is alive")
-		return 
-	else:
-		return None
-	# return active_host
-
+    # for host in hosts:
+    # 	print(host)
+    ret = ping(host, timeout=1)
+    if ret != None:
+        # active_hosts.append(host)
+        print(host, "is alive")
+        return
+    else:
+        return None
+    # return active_host
 
 
 def parse_input():
-	# take input through parsing
-	# sanitize input and return
-	parser = argparse.ArgumentParser(description = "Network Scanner")
-	parser.add_argument("host", help = "Hostname/IP/CIDR " )
-	parser.add_argument("-p","--port", nargs = "*", help = "Specific ports to enumerate for" )
+    # take input through parsing
+    # sanitize input and return
+    parser = argparse.ArgumentParser(description="Network Scanner")
+    parser.add_argument("host", help="Hostname/IP/CIDR ")
+    parser.add_argument("-p", "--port", nargs="*",
+                        help="Specific ports to enumerate for")
 
-	inputs = parser.parse_args()
-	if inputs.port:
-		return (inputs.host, inputs.port)
-	else:
-		return (inputs.host,None)
+    inputs = parser.parse_args()
+    if inputs.port:
+        return (inputs.host, inputs.port)
+    else:
+        return (inputs.host, None)
+
 
 def validate_ports(ports_input):
-						## Checking Ports for various types of inputs
-						## If no ports are specified then choose all 0-65535
+    # Checking Ports for various types of inputs
+    # If no ports are specified then choose all 0-65535
 
-	# Regex's to validate input ports
-	comma_sep_value_regex = r"^[0-9]+(,[0-9]+)+$"
-	range_ports_regex = r"^(\d+)(?:-)(\d+)+$"
-	individual_port_regex = r"^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
+    # Regex's to validate input ports
+    comma_sep_value_regex = r"^[0-9]+(,[0-9]+)+$"
+    range_ports_regex = r"^(\d+)(?:-)(\d+)+$"
+    individual_port_regex = r"^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
 
-	if ports_input == None:
-		ports = [x for x in range(1,65536)]
-							## Matching ports_input for comma separated value (22,25,45,98)
-	elif re.fullmatch(pattern = comma_sep_value_regex, string = ports_input):
-		value = re.fullmatch(pattern = comma_sep_value_regex,string = ports_input)
-		ports = value.group().split(',')
-		ports = [int(port) for port in ports]
-		if max(ports) > 65535 or min(ports) < 0:
-			# Show Error
-			sys.exit(1)
+    if ports_input == None:
+        ports = [x for x in range(1, 65536)]
+        # Matching ports_input for comma separated value (22,25,45,98)
+    elif re.fullmatch(pattern=comma_sep_value_regex, string=ports_input):
+        value = re.fullmatch(pattern=comma_sep_value_regex, string=ports_input)
+        ports = value.group().split(',')
+        ports = [int(port) for port in ports]
+        if max(ports) > 65535 or min(ports) < 0:
+            # Show Error
+            sys.exit(1)
 
-							## Matching ports_input for range seperated value ( 22-55 )
-	elif re.fullmatch(range_ports_regex, ports_input):
-		value = re.fullmatch(range_ports_regex, ports_input)
-		start,end = value.group().split('-')
-		start,end = int(start),int(end)
-		if start < 0 or start > 65535 or end < 0 or end > 65535:
-			# Show error
-			sys.exit(1)
-		ports = [port for port in range(start, end+1)]
-	
-							## Matching ports_input for indvidual value ( 22 )
-	elif re.fullmatch(individual_port_regex, ports_input):
-		value = re.fullmatch(individual_port_regex, ports_input)
-		ports = int(value.group())
-		if ports < 0 or ports > 65535:
-			# Show Error if
-			sys.exit(1)
-	else:
-		# Display invalid port format
-		print("Invalid Port format")
-	
-	return ports
+            # Matching ports_input for range seperated value ( 22-55 )
+    elif re.fullmatch(range_ports_regex, ports_input):
+        value = re.fullmatch(range_ports_regex, ports_input)
+        start, end = value.group().split('-')
+        start, end = int(start), int(end)
+        if start < 0 or start > 65535 or end < 0 or end > 65535:
+            # Show error
+            sys.exit(1)
+        ports = [port for port in range(start, end+1)]
+
+        # Matching ports_input for indvidual value ( 22 )
+    elif re.fullmatch(individual_port_regex, ports_input):
+        value = re.fullmatch(individual_port_regex, ports_input)
+        ports = int(value.group())
+        if ports < 0 or ports > 65535:
+            # Show Error if
+            sys.exit(1)
+    else:
+        # Display invalid port format
+        print("Invalid Port format")
+
+    return ports
+
 
 def validate_host(hosts_input):
-	ipv4_regex = r"^\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b$"
-	cidr_block_regex = r"^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))+$"
-	domain_name_regex = r"((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}"
-	hosts = []
+    ipv4_regex = r"^\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b$"
+    cidr_block_regex = r"^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))+$"
+    domain_name_regex = r"((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}"
+    hosts = []
 
-	if re.fullmatch(pattern = ipv4_regex, string = hosts_input):
-		value = re.fullmatch(pattern = ipv4_regex, string =hosts_input)
-		host = value.group()
-		hosts.append(host)
+    if re.fullmatch(pattern=ipv4_regex, string=hosts_input):
+        value = re.fullmatch(pattern=ipv4_regex, string=hosts_input)
+        host = value.group()
+        hosts.append(host)
 
-	elif re.fullmatch(pattern = cidr_block_regex, string = hosts_input):
-		value = re.fullmatch(pattern = cidr_block_regex, string =hosts_input)
-		host = value.group()
+    elif re.fullmatch(pattern=cidr_block_regex, string=hosts_input):
+        value = re.fullmatch(pattern=cidr_block_regex, string=hosts_input)
+        host = value.group()
 
-		net_mask = host.split("/")[1]
-		if net_mask <= 32 and net_mask => 24:
-			network_ip = host.split(".")
-			network_ip[3] = "".join(["0/",net_mask])
-			host = ".".join(network_ip)
-		
-		elif net_mask <= 23 and net_mask => 12:
-			network_ip = host.split(".")
-			network_ip[2] = "0"
-			network_ip[3] = "".join(["0/",net_mask])
-			host = ".".join(network_ip)
+        net_mask = host.split("/")[1]
+        if net_mask <= 32 and net_mask >= 24:
+            network_ip = host.split(".")
+            network_ip[3] = "".join(["0/", net_mask])
+            host = ".".join(network_ip)
 
-		elif net_mask <= 11 and net_mask => 2:
-			network_ip = host.split(".")
-			network_ip[1] = "0"
-			network_ip[2] = "0"
-			network_ip[3] = "".join(["0/",net_mask])
-			host = ".".join(network_ip)
-		else:
-			print("Invalid Netmask")
-			
-		net4 = ipaddress.ip_network(host)
-		for x in net4.hosts():
-			hosts.append(str(x))
+        elif net_mask <= 23 and net_mask >= 12:
+            network_ip = host.split(".")
+            network_ip[2] = "0"
+            network_ip[3] = "".join(["0/", net_mask])
+            host = ".".join(network_ip)
 
-	elif re.fullmatch(pattern = domain_name_regex, string = hosts_input):
-		value = re.fullmatch(pattern = domain_name_regex, string =hosts_input)
-		host = value.group()
-		hosts.append(host)
-	else:
-		# Display error saying host format is invalid
-		print("Invalid host format")
-		hosts = None
-	
-	return hosts
+        elif net_mask <= 11 and net_mask >= 2:
+            network_ip = host.split(".")
+            network_ip[1] = "0"
+            network_ip[2] = "0"
+            network_ip[3] = "".join(["0/", net_mask])
+            host = ".".join(network_ip)
+        else:
+            print("Invalid Netmask")
+			# Raise Error stating invalid Netmask
+
+        net4 = ipaddress.ip_network(host)
+        for x in net4.hosts():
+            hosts.append(str(x))
+
+    elif re.fullmatch(pattern=domain_name_regex, string=hosts_input):
+        value = re.fullmatch(pattern=domain_name_regex, string=hosts_input)
+        host = value.group()
+        hosts.append(host)
+    else:
+        # Display error saying host format is invalid
+        print("Invalid host format")
+        hosts = None
+
+    return hosts
 
 
-# take input 
-hosts_input,ports_input = parse_input()
+# take input
+hosts_input, ports_input = parse_input()
 
 
 if ports_input:
-	ports_input = "".join(ports_input)
+    ports_input = "".join(ports_input)
 
 hosts = validate_host(hosts_input)
 ports = validate_ports(ports_input)
 
 active_hosts = []
 for host in hosts:
-	
-	host = socket.gethostbyname(host)
-	conf.L3socket = L3RawSocket
-	
-	resp = sr1(IP(dst=host)/ICMP()/"Hello World!",verbose =0, timeout =1)
-	if resp:
-		active_hosts.append(host)
-		print(host)
-		
+
+    host = socket.gethostbyname(host)
+    conf.L3socket = L3RawSocket
+
+    resp = sr1(IP(dst=host)/ICMP()/"Hello World!", verbose=0, timeout=1)
+    if resp:
+        active_hosts.append(host)
+        print(host)
+
 print(active_hosts)
 
 
 # threads = []
-	# threads.append(threading.Thread(target=active_host, args=(host,active_hosts)) )
-	# threads[-1].start()
-	# [x.join() for x in threads]
+# threads.append(threading.Thread(target=active_host, args=(host,active_hosts)) )
+# threads[-1].start()
+# [x.join() for x in threads]
